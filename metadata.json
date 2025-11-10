@@ -1,0 +1,5 @@
+{
+  "name": "Receipt Processor & Image Suite",
+  "description": "An intelligent application to automatically de-skew, crop, and OCR receipts. It also includes tools for image optimization, AI-powered editing, and generation.",
+  "requestFramePermissions": []
+}
