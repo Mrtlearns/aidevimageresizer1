@@ -50,6 +50,22 @@ function getBase64Size(dataUrl: string): number {
     return (base64.length * 3 / 4) - padding;
 }
 
+const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error && error.message) {
+        return error.message;
+    }
+    if (typeof error === 'string') {
+        return error;
+    }
+    if (error && typeof error === 'object' && 'message' in error) {
+        const maybeMessage = (error as { message?: unknown }).message;
+        if (typeof maybeMessage === 'string') {
+            return maybeMessage;
+        }
+    }
+    return 'An unknown error occurred.';
+};
+
 // Optimized and memoized component for displaying images.
 const ImageWithHistory: React.FC<{ file: UploadedFile | undefined }> = React.memo(({ file }) => {
     if (!file) return null;
@@ -246,7 +262,7 @@ const App: React.FC = () => {
         }
       } catch (error) {
           console.error(`${description} failed:`, error);
-          alert(`Failed to ${description.toLowerCase()} one or more images.`);
+          alert(`Failed to ${description.toLowerCase()} one or more images.\n\n${getErrorMessage(error)}`);
       } finally {
           setLoadingState({ active: false, message: '' });
       }
@@ -269,7 +285,7 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error('OCR failed:', error);
-        alert('Failed to perform OCR on one or more images.');
+        alert(`Failed to perform OCR on one or more images.\n\n${getErrorMessage(error)}`);
       } finally {
         setLoadingState({ active: false, message: '' });
       }
@@ -356,7 +372,7 @@ const App: React.FC = () => {
             }
         } catch (error) {
             console.error('Auto-Process failed:', error);
-            alert('The auto-process batch failed on one of the steps. Any completed files have been saved.');
+            alert(`The auto-process batch failed on one of the steps. Any completed files have been saved.\n\n${getErrorMessage(error)}`);
         } finally {
             setLoadingState({ active: false, message: '' });
         }
@@ -507,7 +523,7 @@ const App: React.FC = () => {
             updateFileHistory(selectedFileId, editedDataUrl, `Edited: ${prompt.substring(0, 30)}...`);
         } catch (error) {
             console.error('Editing failed:', error);
-            alert('Failed to edit image.');
+            alert(`Failed to edit image.\n\n${getErrorMessage(error)}`);
         } finally {
             setLoadingState({ active: false, message: '' });
         }
@@ -538,7 +554,7 @@ const App: React.FC = () => {
             setSelectedFileId(newFile.id);
         } catch (error) {
             console.error('Generation failed:', error);
-            alert('Failed to generate image.');
+            alert(`Failed to generate image.\n\n${getErrorMessage(error)}`);
         } finally {
             setLoadingState({ active: false, message: '' });
         }
@@ -559,7 +575,7 @@ const App: React.FC = () => {
             setAnalysisResult(result);
         } catch (error) {
             console.error('Analysis failed:', error);
-            alert('Failed to analyze image.');
+            alert(`Failed to analyze image.\n\n${getErrorMessage(error)}`);
         } finally {
             setLoadingState({ active: false, message: '' });
         }
